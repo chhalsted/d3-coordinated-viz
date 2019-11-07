@@ -22,7 +22,7 @@ function setMap(){
        .center([0, 44.36])
        .rotate([69.15, 0, 0])
        .parallels([45, 90])
-       .scale(20000)
+       .scale(25000)
        .translate([width / 2, height / 2]);
 
   var path = d3.geoPath()
@@ -36,32 +36,51 @@ function setMap(){
     .await(callback);
 
   function callback(error, csvData, counties, towns){
+    //create graticule generator
+    var graticule = d3.geoGraticule()
+      .step([.5, .5])
 
-      console.log(error);
-      console.log(csvData);
+    //create graticule background
+    var gratBackground = map.append("path")
+      .datum(graticule.outline()) //bind graticule background
+      .attr("class", "gratBackground") //assign class for styling
+      .attr("d", path) //project graticule
 
-      console.log(counties);
-      var maineCounties = topojson.feature(counties, counties.objects.counties)
-      console.log(maineCounties);
+    //create graticule lines
+    var gratLines = map.selectAll(".gratLines") //select graticule elements that will be created
+      .data(graticule.lines()) //bind graticule lines to each element to be created
+      .enter() //create an element for each datum
+      .append("path") //append each element to the svg as a path element
+      .attr("class", "gratLines") //assign class for styling
+      .attr("d", path); //project graticule lines
 
-      console.log(towns);
-      var maineTowns = topojson.feature(towns, towns.objects.searsmont_towns_10miles).features
-      console.log(maineTowns);
+    console.log(error);
+    console.log(csvData);
 
-      //add Maine Counties to map
-      var countries = map.append("path")
-          .datum(maineCounties)
-          .attr("class", "countries")
-          .attr("d", path);
+    console.log(counties);
+    var maineCounties = topojson.feature(counties, counties.objects.counties)
+    console.log(maineCounties);
 
-      //add Searsmont adjacent towns to map
-      var regions = map.selectAll(".regions")
-          .data(maineTowns)
-          .enter()
-          .append("path")
-          .attr("class", function(d){
-              return "regions " + d.properties.town;
-          })
-          .attr("d", path);
+    console.log(towns);
+    var maineTowns = topojson.feature(towns, towns.objects.searsmont_towns_10miles).features
+    console.log(maineTowns);
+
+    //add Maine Counties to map
+    var countries = map.append("path")
+      .datum(maineCounties)
+      .attr("class", "countries")
+      .attr("d", path);
+
+    //add Searsmont adjacent towns to map
+    var regions = map.selectAll(".regions")
+      .data(maineTowns)
+      .enter()
+      .append("path")
+      .attr("class", function(d){
+          return "regions " + d.properties.town;
+      })
+      .attr("d", path);
+
+
   };
 };
