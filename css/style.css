@@ -34,3 +34,8 @@
 .map {
     border: medium solid #999;
 }
+.regions {
+    stroke: #000;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+}
