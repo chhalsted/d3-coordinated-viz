@@ -29,7 +29,7 @@ var chartWidth = 300; //window.innerWidth,
 
 //create a scale to size bars proportionally to frame and for axis
 var yScale = d3.scaleLinear()
-  .range([chartInnerHeight, 0])
+  .range([0, 400])
   .domain([0, 30]);
 
 //begin script when window loads
@@ -296,7 +296,7 @@ function createDropdown(csvData){
   var titleOption = dropdown.append("option")
       .attr("class", "titleOption")
       .attr("disabled", "true")
-      .text("Select Statistic");
+      .text("Select Attribute");
 
   //add attribute name options
   var attrOptions = dropdown.selectAll("attrOptions")
@@ -344,7 +344,7 @@ function updateChart(bars, n, colorScale){
     })
     //size/resize bars
     .attr("height", function(d, i){
-        return chartInnerHeight - yScale(parseFloat(d[expressed]));
+        return 463 - yScale(parseFloat(d[expressed]));
     })
     .attr("y", function(d, i){
         return yScale(parseFloat(d[expressed])) + topBottomPadding;
