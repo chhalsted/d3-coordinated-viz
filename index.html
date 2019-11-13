@@ -16,22 +16,36 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-xs">
+        <div class="col-xs-12">
           <h1>Who's Moving Near ME?</h1>
           <h4>GEOG575: Lab 2 - D3, Christian Halsted</h2>
-          <p>Mainer's are always worried about 'folks from away' moving to town,
+          <p>Mainers are always worried about 'folks from away' moving to town,
             driving up home prices, and changing our lifestyle - especially along
-            the coast.  Let's examine if towns around my home are actually experiencing
+            the coast.  Let's examine if towns within 10 miles of my home town are actually experiencing
             this phenomena.</p>
         </div>
       </div>
 
       <div class="row">
-        <div class="col-xs-12" id="divDropdown">Select statistic: </div>
+        <div class="col-xs-12" id="divDropdown">Select a statistic: </div>
       </div>
       <div class="row">
         <div class="col-md-6" id="divMap"></div>
         <div class="col-md-6" id="divGraph"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12" id="divMetadata">
+          <h4>Metadata:</h4>
+          <ol>
+            <li>Single family homes built and average home value from U.S. Census Bureau, Building Permits
+              Survey <a href='https://www.census.gov/construction/bps/'>https://www.census.gov/construction/bps/</a></li>
+            <li>Population and Housing Units statistics collected from U.S. Census
+              Bureau, American Fact Finder - Community Facts
+              <a href='https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml'>https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml</a></li>
+            <li>Maine towns and county spatial datasets from the Maine GeoLibrary
+              <a href='https://www.maine.gov/geolib/'>https://www.maine.gov/geolib/</a></li>
+          </ol>
+        </div>
       </div>
     </div>
 

@@ -4,33 +4,43 @@
 (function(){
 
 //pseudo-global variables
-var attrArray = ['sfhomepermits2010_17'
-                ,'totalhomevaluebuilt2010_17'
-                ,'avghomevalue'
-                ,'housingunits2010'
-                ,'housingunits2017'
-                ,'housingunitschange'
-                ,'housingunitschangepercent'
-                ,'population2010'
-                ,'population2017'
-                ,'populationchange'
-                ,'popchangepercent'
-                ,'distancetocoast'];
+var attrArray = ['Single_Family_Home_Permits_2010_to_2017'
+                ,'Total_Value_of_All_Homes_Built_2010_to_2017'
+                ,'Average_Home_Value'
+                ,'Housing_Units_2010'
+                ,'Housing_Units_2017'
+                ,'Housing_Units_Change'
+                ,'Housing_Units_Percent_Change'
+                ,'Population_2010'
+                ,'Population_2017'
+                ,'Population_Change'
+                ,'Population_Change_Percent'
+                ,'Miles_to_Coast'];
 var expressed = attrArray[11]; //initial attribute
 //chart frame dimensions
 var chartWidth = 300; //window.innerWidth,
   chartHeight = 400,
-  leftPadding = 25,
+  leftPadding = 40,
   rightPadding = 2,
   topBottomPadding = 5,
   chartInnerWidth = chartWidth - leftPadding - rightPadding,
   chartInnerHeight = chartHeight - topBottomPadding * 2,
   translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
+var chart, yAxis, axis;
 
-//create a scale to size bars proportionally to frame and for axis
-var yScale = d3.scaleLinear()
-  .range([chartInnerHeight, 0])
-  .domain([0, 30]);
+// function getMaxY(test){
+//   console.log(expressed);
+//   if (test==1) {
+//     return 30
+//   } else {
+//     return 100
+//   }
+// }
+// //create a scale to size bars proportionally to frame and for axis
+// var yScale = d3.scaleLinear()
+//   .range([chartInnerHeight, 0])
+//   .domain([0, getMaxY(2)]);
+var yScale;
 
 //begin script when window loads
 window.onload = setMap();
@@ -74,7 +84,7 @@ function setMap(){
     setGraticule(map, path);
 
     // console.log(error);
-    // console.log(csvData);
+    console.log(csvData);
 
     // console.log(counties);
     var maineCounties = topojson.feature(counties, counties.objects.counties)
@@ -136,12 +146,12 @@ function setGraticuleLines(map, path){
 
 function joinData(maineTowns, csvData){
     //loop through csv to assign each set of csv attribute values to geojson region
-    for (var i=0; i<csvData.length; i++){
+    for (var i=0; i < csvData.length; i++){
       var csvRegion = csvData[i]; //the current region
       var csvKey = csvRegion.geocode; //the CSV primary key
 
       //loop through geojson regions to find correct region
-      for (var a=0; a<maineTowns.length; a++){
+      for (var a=0; a < maineTowns.length; a++){
         var geojsonProps = maineTowns[a].properties; //the current region geojson properties
         var geojsonKey = geojsonProps.geocode; //the geojson primary key
         //where primary keys match, transfer csv data to geojson properties object
@@ -199,7 +209,7 @@ function makeColorScale(data){
 
     //build array of all values of the expressed attribute
     var domainArray = [];
-    for (var i=0; i<data.length; i++){
+    for (var i=0; i < data.length; i++){
         var val = parseFloat(data[i][expressed]);
         domainArray.push(val);
     };
@@ -223,7 +233,7 @@ function choropleth(props, colorScale){
 //function to create coordinated bar chart
 function setChart(csvData, colorScale){
     //create a second svg element to hold the bar chart
-    var chart = d3.select("#divGraph")
+    chart = d3.select("#divGraph")
         .append("svg")
         .attr("width", chartWidth)
         .attr("height", chartHeight)
@@ -254,25 +264,25 @@ function setChart(csvData, colorScale){
         .on("mousemove", moveLabel);
     var desc = bars.append("desc")
         .text('{"stroke": "none", "stroke-width": "0px"}');
-        updateChart(bars, csvData.length, colorScale);
+        updateChart(bars, csvData, colorScale);
 
-    //create a text element for the chart title
-    var chartTitle = chart.append("text")
-        .attr("x", 40)
-        .attr("y", 40)
-        .attr("class", "chartTitle")
-        .text("Value of " + expressed + " in each town");
+    // //create a text element for the chart title
+    // var chartTitle = chart.append("text")
+    //     .attr("x", 40)
+    //     .attr("y", 40)
+    //     .attr("class", "chartTitle")
+    //     .text("Value of " + expressed + " in each town");
 
-    //create vertical axis generator
-    var yAxis = d3.axisLeft()
-        .scale(yScale)
+    // //create vertical axis generator
+    // var yAxis = d3.axisLeft()
+    //     .scale(yScale)
         // .orient("left");
 
-    //place axis
-    var axis = chart.append("g")
-        .attr("class", "axis")
-        .attr("transform", translate)
-        .call(yAxis);
+    // //place axis
+    // var axis = chart.append("g")
+    //     .attr("class", "axis")
+    //     .attr("transform", translate)
+    //     .call(yAxis);
 
     //create frame for chart border
     var chartFrame = chart.append("rect")
@@ -288,6 +298,7 @@ function createDropdown(csvData){
   var dropdown = d3.select("#divDropdown")
       .append("select")
       .attr("class", "dropdown")
+      .attr("id", "selStat")
       .on("change", function(){
             changeAttribute(this.value, csvData)
       });
@@ -296,7 +307,7 @@ function createDropdown(csvData){
   var titleOption = dropdown.append("option")
       .attr("class", "titleOption")
       .attr("disabled", "true")
-      .text("Select Statistic");
+      .text("");
 
   //add attribute name options
   var attrOptions = dropdown.selectAll("attrOptions")
@@ -304,7 +315,9 @@ function createDropdown(csvData){
       .enter()
       .append("option")
       .attr("value", function(d){ return d })
-      .text(function(d){ return d });
+      .text(function(d){ return d.replace(/_/g," ") });
+
+  $("#selStat").val(expressed);
 };
 
 //dropdown change listener handler
@@ -333,12 +346,41 @@ function changeAttribute(attribute, csvData){
         return i * 20
     })
     .duration(500);
-    updateChart(bars, csvData.length, colorScale);
+    updateChart(bars, csvData, colorScale);
 };
 
 //function to position, size, and color bars in chart
-function updateChart(bars, n, colorScale){
+function updateChart(bars, csvData, colorScale){
+  //figure out max for y axis
+  var yMax = 0, yMin = 0;
+  for (var i = 0; i < csvData.length; i++){
+    if (parseFloat(csvData[i][expressed]) > yMax) {
+      yMax = parseFloat(csvData[i][expressed]);
+    }
+    if (parseFloat(csvData[i][expressed]) < yMin) {
+      yMin = parseFloat(csvData[i][expressed])
+    }
+  }
+
+  //create a scale to size bars proportionally to frame and for axis
+  yScale = d3.scaleLinear()
+    .range([chartInnerHeight, 0])
+    .domain([0, yMax*1.1]);
+    // .domain([yMin, yMax*1.1]);
+
+  //create vertical axis generator
+  $(".axis").remove();
+  yAxis = d3.axisLeft()
+      .scale(yScale)
+  //place axis
+  axis = chart.append("g")
+      .attr("class", "axis")
+      // .attr("id", "axis")
+      .attr("transform", translate)
+      .call(yAxis);
+
   //position bars
+  var n = csvData.length;
   bars.attr("x", function(d, i){
         return i * (chartInnerWidth / n) + leftPadding;
     })
@@ -391,8 +433,8 @@ function dehighlight(props){
 //function to create dynamic label (tool tip)
 function setLabel(props){
     //label content
-    var labelAttribute = "<h1>" + props[expressed] +
-        "</h1><b>" + expressed + "</b>";
+    var labelAttribute = "<h4>" + props[expressed] +
+        "</h4><b>" + expressed.replace(/_/g," ") + "</b>";
 
     //create info label div
     var infolabel = d3.select("body")

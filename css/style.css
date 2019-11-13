@@ -7,9 +7,10 @@
     border: thin solid #999;
     margin: 5px 0px 5px 0px;
 }
-
 #divDropdown {
   padding: 5px 0px 5px 0px;
+  justify-content: center;
+  /* text-align:center; */
 }
 
 .axis path,
@@ -33,7 +34,7 @@
 .counties {
     fill: #FFF;
     stroke: #CCC;
-    stroke-width: 2px;
+    stroke-width: 1.25px;
 }
 .gratLines {
     fill: none;
@@ -59,18 +60,18 @@
     float: right;
     margin: 7px 20px 0 0;
 } */
-.chartTitle {
+/* .chartTitle {
     font-family: sans-serif;
-    font-size: 1em;
+    font-size: .85em;
     font-weight: bold;
-}
+} */
 .chartBackground {
     fill: rgba(128,128,128,.2);
 }
 .chartFrame {
     fill: none;
     stroke: #999;
-    stroke-width: 3px;
+    stroke-width: 1.5px;
     shape-rendering: crispEdges;
 }
 
@@ -113,7 +114,7 @@ option {
     font-weight: normal;
 }
 
-.infolabel h1 {
+.infolabel h4 {
     margin: 0 20px 0 0;
     padding: 0;
     display: inline-block;
@@ -121,11 +122,15 @@ option {
 }
 .infolabel {
     position: absolute;
-    height: 50px;
+    height: 65px;
     min-width: 100px;
     color: #fff;
     background-color: #000;
     border: solid thin #fff;
     padding: 5px 10px;
     top: -75px;
+}
+
+#divMetadata h4, #divMetadata li {
+  font-size: small;
 }
