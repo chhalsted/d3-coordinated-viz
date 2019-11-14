@@ -16,7 +16,7 @@ var attrArray = ['Single_Family_Home_Permits_2010_to_2017'
                 ,'Population_Change'
                 ,'Population_Change_Percent'
                 ,'Miles_to_Coast'];
-var expressed = attrArray[11]; //initial attribute
+var expressed = attrArray[2]; //initial attribute
 //chart frame dimensions
 var chartWidth = 300; //window.innerWidth,
   chartHeight = 400,
@@ -84,7 +84,7 @@ function setMap(){
     setGraticule(map, path);
 
     // console.log(error);
-    console.log(csvData);
+    // console.log(csvData);
 
     // console.log(counties);
     var maineCounties = topojson.feature(counties, counties.objects.counties)
@@ -164,7 +164,7 @@ function joinData(maineTowns, csvData){
         };
       };
     };
-    console.log(maineTowns);
+    // console.log(maineTowns);
     return maineTowns;
 };
 
@@ -365,8 +365,12 @@ function updateChart(bars, csvData, colorScale){
   //create a scale to size bars proportionally to frame and for axis
   yScale = d3.scaleLinear()
     .range([chartInnerHeight, 0])
-    .domain([0, yMax*1.1]);
-    // .domain([yMin, yMax*1.1]);
+    // .domain([0, yMax*1.1]);
+    .domain([yMin, yMax*1.1]);
+  //console.log(chartInnerHeight);
+  // console.log(yMin, ' - ', yMax);
+  yZeroXAxis = chartInnerHeight - ((chartInnerHeight * Math.abs(yMin)) / (Math.abs(yMin) + (yMax * 1.1)));
+  // console.log('yZeroXAxis', yZeroXAxis);
 
   //create vertical axis generator
   $(".axis").remove();
@@ -382,14 +386,33 @@ function updateChart(bars, csvData, colorScale){
   //position bars
   var n = csvData.length;
   bars.attr("x", function(d, i){
-        return i * (chartInnerWidth / n) + leftPadding;
+    return i * (chartInnerWidth / n) + leftPadding;
     })
     //size/resize bars
     .attr("height", function(d, i){
-        return chartInnerHeight - yScale(parseFloat(d[expressed]));
+      //console.log(d[expressed], ':', yScale(parseFloat(d[expressed])));
+      //return chartInnerHeight - yScale(parseFloat(d[expressed]));
+      var h=0;
+      if (d[expressed] > 0) {
+        h = yZeroXAxis - yScale(parseFloat(d[expressed]));
+      } else if (d[expressed] < 0) {
+        h = yScale(parseFloat(d[expressed])) - yZeroXAxis;
+      }
+      return h
     })
     .attr("y", function(d, i){
-        return yScale(parseFloat(d[expressed])) + topBottomPadding;
+      //console.log(d[expressed], '::', yScale(parseFloat(d[expressed])));
+      // return yScale(parseFloat(d[expressed])) + topBottomPadding;
+      var y = 390;
+      if (d[expressed] != '') {
+        if (d[expressed] >= 0) {
+          y = yScale(parseFloat(d[expressed]));
+        } else if (d[expressed] < 0) {
+          y = yZeroXAxis;
+        }
+      }
+      //console.log('set y: ', y);
+      return y + topBottomPadding
     })
     //color/recolor bars
     .style("fill", function(d){
@@ -471,7 +494,5 @@ function moveLabel(){
       .style("left", x + "px")
       .style("top", y + "px");
 };
-
-
 
 })(); //last line of main.js - self-executing anonymous function
