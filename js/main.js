@@ -16,7 +16,7 @@ var attrArray = ['Single_Family_Home_Permits_2010_to_2017'
                 ,'Population_Change'
                 ,'Population_Change_Percent'
                 ,'Miles_to_Coast'];
-var expressed = attrArray[2]; //initial attribute
+var expressed = attrArray[11]; //initial attribute
 //chart frame dimensions
 var chartWidth = 300; //window.innerWidth,
   chartHeight = 400,
@@ -195,27 +195,25 @@ function setEnumerationUnits(maineTowns, map, path, colorScale){
 
 //function to create color scale generator
 function makeColorScale(data){
-    var colorClasses = [
-        "#ffffcc",
-        "#c2e699",
-        "#78c679",
-        "#31a354",
-        "#006837"
-    ];
-
-    //create color scale generator
-    var colorScale = d3.scaleQuantile()
-        .range(colorClasses);
-
-    //build array of all values of the expressed attribute
-    var domainArray = [];
-    for (var i=0; i < data.length; i++){
-        var val = parseFloat(data[i][expressed]);
-        domainArray.push(val);
-    };
-    //assign array of expressed values as scale domain
-    colorScale.domain(domainArray);
-    return colorScale;
+  var colorClasses = [
+    "#ffffcc",
+    "#c2e699",
+    "#78c679",
+    "#31a354",
+    "#006837"
+  ];
+  //create color scale generator
+  var colorScale = d3.scaleQuantile()
+    .range(colorClasses);
+  //build array of all values of the expressed attribute
+  var domainArray = [];
+  for (var i=0; i < data.length; i++){
+    var val = parseFloat(data[i][expressed]);
+    domainArray.push(val);
+  };
+  //assign array of expressed values as scale domain
+  colorScale.domain(domainArray);
+  return colorScale;
 };
 
 //function to test for data value and return color
@@ -419,6 +417,8 @@ function updateChart(bars, csvData, colorScale){
         return choropleth(d, colorScale);
     });
 
+  buildLegend(csvData);
+
   var chartTitle = d3.select(".chartTitle")
     .text("Value of " + expressed + " in each town");
 };
@@ -493,6 +493,104 @@ function moveLabel(){
   d3.select(".infolabel")
       .style("left", x + "px")
       .style("top", y + "px");
+};
+
+
+function buildLegend(csvData) {
+  // //Define default colorbrewer scheme
+  // var colorSchemeSelect = "Greens";
+  // var colorScheme = colorbrewer[colorSchemeSelect];
+  //
+  // //define default number of quantiles
+  // var quantiles = 5;
+  //
+  // //Define quantile scale to sort data values into buckets of color
+  // var color = d3.scale.quantile()
+  //    .range(colorScheme[quantiles]);
+  var colorScale = makeColorScale(csvData);
+  var width = 200;
+  $(".legend").remove();
+  var svg = d3.select("#divLegend")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", 135)
+      .attr("class", "legend");
+      // .call(responsivefy);
+  var legend = svg.selectAll('g.legendEntry')
+      .data(colorScale.range().reverse())
+      .enter()
+      .append('g').attr('class', 'legendEntry');
+  legend
+      .append('rect')
+      .attr("x",20)
+      .attr("y", function(d, i) {
+         return i * 25;
+      })
+     .attr("width", 20)
+     .attr("height", 20)
+     .style("stroke", "black")
+     .style("stroke-width", 0.5)
+     .style("fill", function(d){
+       return d;
+     });
+         //the data objects are the fill colors
+
+  legend
+      .append('text')
+      .attr("x", 70) //leave 5 pixel space after the <rect>
+      .attr("y", function(d, i) {
+         return i * 25;
+      })
+      .attr("dy", "1.2em") //move text from the x,y point
+      .text(function(d,i) {
+          var extent = colorScale.invertExtent(d);
+          //extent will be a two-element array, format it however you want:
+          var format = d3.format("0.2f");
+          return format(+extent[0]) + " - " + format(+extent[1]);
+      });
+
+//   legend = d3.select("#divLegend")
+//       .append("svg")
+//       .attr("width", 500)
+//       .attr("height", 100)
+//       .attr("class", "legend")
+//       .call(responsivefy);
+//
+// // select the svg area
+// // var SVG = d3.select("#divLegend")
+//
+// // create a list of keys
+// // var keys = ["Mister A", "Brigitte", "Eleonore", "Another friend", "Batman"]
+//
+// // // Usually you have a color scale in your chart already
+// var color = d3.scaleOrdinal()
+//   .domain(keys)
+//   .range(d3.schemeSet1);
+// // var color = yScale;
+//
+// // Add one dot in the legend for each name.
+// var size = 20
+// legend.selectAll("mydots")
+//   .data(csvData)
+//   .enter()
+//   .append("rect")
+//     .attr("x", 100)
+//     .attr("y", function(d,i){ return 100 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+//     .attr("width", size)
+//     .attr("height", size)
+//     .style("fill", function(d){ return color(d)})
+//
+// // Add one dot in the legend for each name.
+// legend.selectAll("mylabels")
+//   .data(csvData)
+//   .enter()
+//   .append("text")
+//     .attr("x", 100 + size*1.2)
+//     .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+//     .style("fill", function(d){ return color(d)})
+//     .text(function(d){ return d})
+//     .attr("text-anchor", "left")
+//     .style("alignment-baseline", "middle")
 };
 
 })(); //last line of main.js - self-executing anonymous function

@@ -50,7 +50,8 @@
     stroke-linecap: round;
 }
 .chart {
-    background-color: rgba(128,128,128,.2);
+    /* background-color: rgba(128,128,128,.2); */
+    background-color: #ffffff;
     border: thin solid #999;
     margin: 5px 0px 5px 0px;
     /* float: right; */
@@ -133,4 +134,21 @@ option {
 
 #divMetadata h4, #divMetadata li {
   font-size: small;
+}
+
+#divLegend {
+  align-items: center;
+
+}
+.legend {
+  font-size: 12px;
+  border: 1px solid #999;
+    padding: 5px 0 5px 0;
+}
+/* rect {
+  stroke-width: 2;
+} */
+.col-centered{
+    float: none;
+    margin: 0 auto;
 }
