@@ -20,27 +20,13 @@ var expressed = attrArray[11]; //initial attribute
 //chart frame dimensions
 var chartWidth = 300; //window.innerWidth,
   chartHeight = 400,
-  leftPadding = 40,
+  leftPadding = 45,
   rightPadding = 2,
   topBottomPadding = 5,
   chartInnerWidth = chartWidth - leftPadding - rightPadding,
   chartInnerHeight = chartHeight - topBottomPadding * 2,
   translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
-var chart, yAxis, axis;
-
-// function getMaxY(test){
-//   console.log(expressed);
-//   if (test==1) {
-//     return 30
-//   } else {
-//     return 100
-//   }
-// }
-// //create a scale to size bars proportionally to frame and for axis
-// var yScale = d3.scaleLinear()
-//   .range([chartInnerHeight, 0])
-//   .domain([0, getMaxY(2)]);
-var yScale;
+var chart, yAxis, axis, yScale;
 
 //begin script when window loads
 window.onload = setMap();
@@ -363,12 +349,8 @@ function updateChart(bars, csvData, colorScale){
   //create a scale to size bars proportionally to frame and for axis
   yScale = d3.scaleLinear()
     .range([chartInnerHeight, 0])
-    // .domain([0, yMax*1.1]);
     .domain([yMin, yMax*1.1]);
-  //console.log(chartInnerHeight);
-  // console.log(yMin, ' - ', yMax);
   yZeroXAxis = chartInnerHeight - ((chartInnerHeight * Math.abs(yMin)) / (Math.abs(yMin) + (yMax * 1.1)));
-  // console.log('yZeroXAxis', yZeroXAxis);
 
   //create vertical axis generator
   $(".axis").remove();
@@ -455,20 +437,24 @@ function dehighlight(props){
 
 //function to create dynamic label (tool tip)
 function setLabel(props){
-    //label content
-    var labelAttribute = "<h4>" + props[expressed] +
-        "</h4><b>" + expressed.replace(/_/g," ") + "</b>";
+  //label content
+  if (isNaN(props[expressed])) {
+    var labelAttribute = "<h4>No value available</h4>";
+  } else {
+  var labelAttribute = "<h4>" + props[expressed] +
+      "</h4><b>" + expressed.replace(/_/g," ") + "</b>";
+  }
 
-    //create info label div
-    var infolabel = d3.select("body")
-        .append("div")
-        .attr("class", "infolabel")
-        .attr("id", props.geocode + "_label")
-        .html(labelAttribute);
+  //create info label div
+  var infolabel = d3.select("body")
+    .append("div")
+    .attr("class", "infolabel")
+    .attr("id", props.geocode + "_label")
+    .html(labelAttribute);
 
-    var regionName = infolabel.append("div")
-        .attr("class", "labelname")
-        .html(props.town);
+  var regionName = infolabel.append("div")
+    .attr("class", "labelname")
+    .html(props.town);
 };
 
 //function to move info label with mouse
@@ -495,18 +481,7 @@ function moveLabel(){
       .style("top", y + "px");
 };
 
-
 function buildLegend(csvData) {
-  // //Define default colorbrewer scheme
-  // var colorSchemeSelect = "Greens";
-  // var colorScheme = colorbrewer[colorSchemeSelect];
-  //
-  // //define default number of quantiles
-  // var quantiles = 5;
-  //
-  // //Define quantile scale to sort data values into buckets of color
-  // var color = d3.scale.quantile()
-  //    .range(colorScheme[quantiles]);
   var colorScale = makeColorScale(csvData);
   var width = 200;
   $(".legend").remove();
@@ -515,7 +490,6 @@ function buildLegend(csvData) {
       .attr("width", width)
       .attr("height", 135)
       .attr("class", "legend");
-      // .call(responsivefy);
   var legend = svg.selectAll('g.legendEntry')
       .data(colorScale.range().reverse())
       .enter()
@@ -533,7 +507,6 @@ function buildLegend(csvData) {
      .style("fill", function(d){
        return d;
      });
-         //the data objects are the fill colors
 
   legend
       .append('text')
@@ -548,49 +521,6 @@ function buildLegend(csvData) {
           var format = d3.format("0.2f");
           return format(+extent[0]) + " - " + format(+extent[1]);
       });
-
-//   legend = d3.select("#divLegend")
-//       .append("svg")
-//       .attr("width", 500)
-//       .attr("height", 100)
-//       .attr("class", "legend")
-//       .call(responsivefy);
-//
-// // select the svg area
-// // var SVG = d3.select("#divLegend")
-//
-// // create a list of keys
-// // var keys = ["Mister A", "Brigitte", "Eleonore", "Another friend", "Batman"]
-//
-// // // Usually you have a color scale in your chart already
-// var color = d3.scaleOrdinal()
-//   .domain(keys)
-//   .range(d3.schemeSet1);
-// // var color = yScale;
-//
-// // Add one dot in the legend for each name.
-// var size = 20
-// legend.selectAll("mydots")
-//   .data(csvData)
-//   .enter()
-//   .append("rect")
-//     .attr("x", 100)
-//     .attr("y", function(d,i){ return 100 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
-//     .attr("width", size)
-//     .attr("height", size)
-//     .style("fill", function(d){ return color(d)})
-//
-// // Add one dot in the legend for each name.
-// legend.selectAll("mylabels")
-//   .data(csvData)
-//   .enter()
-//   .append("text")
-//     .attr("x", 100 + size*1.2)
-//     .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
-//     .style("fill", function(d){ return color(d)})
-//     .text(function(d){ return d})
-//     .attr("text-anchor", "left")
-//     .style("alignment-baseline", "middle")
 };
 
 })(); //last line of main.js - self-executing anonymous function

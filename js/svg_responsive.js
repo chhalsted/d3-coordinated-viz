@@ -1,5 +1,5 @@
 function responsivefy(svg) {
-  // make SVGs responsivefy
+  // make SVGs responsive
   // Credit:  Ben Clinkinbeard
   // https://benclinkinbeard.com/d3tips/make-any-chart-responsive-with-one-function/?utm_content=buffer976d6&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer
 
